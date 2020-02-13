@@ -20,39 +20,38 @@ import math
 import pickle
 import re
 
-os.chdir('C://Users//danny//Documents/data_science/groove_classification')
 
 
 ############################## functions ##############################
 
 
 def create_meta_data(wav_filename):
-    
+
     data_df, genre = read_and_format_wav_file(wav_filename)
-    
+
     data_df = smooth_out_volume(data_df)
-    
+
     data_df = calculate_average_volume_per_note(data_df)
-    
+
     #normalizing the data
     data_df['lr_abs_mean_mean_z'] = (data_df['lr_abs_mean_mean'] - data_df['lr_abs_mean_mean'].mean())/data_df['lr_abs_mean_mean'].std()
-    
+
     data_df, tot_time = cluster_notes_into_volume_levels(data_df)
-    
+
     #calculating meta data
     note_count_high, note_hz_high, avg_space_high = calc_note_stats(data_df, 2, tot_time)
     note_count_med, note_hz_med, avg_space_med = calc_note_stats(data_df, 1, tot_time)
     note_count_low, note_hz_low, avg_space_low = calc_note_stats(data_df, 0, tot_time)
-    
+
     high_med_note_ratio = note_count_high/note_count_med
     high_med_space_ratio = avg_space_high/avg_space_med
-    
+
     high_low_note_ratio = note_count_high/note_count_low
     high_low_space_ratio = avg_space_high/avg_space_low
-    
+
     med_low_note_ratio = note_count_med/note_count_low
     med_low_space_ratio = avg_space_med/avg_space_low
-    
+
     #add all meta data for single groove to a row
     row = [note_count_high, note_hz_high, avg_space_high,
                  note_count_med, note_hz_med, avg_space_med,
@@ -62,7 +61,7 @@ def create_meta_data(wav_filename):
                  med_low_note_ratio, med_low_space_ratio,
                  genre]
     return row
-    
+
 
 
 
@@ -70,16 +69,16 @@ def create_meta_data(wav_filename):
 def read_and_format_wav_file(wav_filename):
     wav_filename = wav_filename.replace('.wav', '') + '.wav'
     genre = re.split('_', wav_filename)[0]
-    
+
     rate, data = wavfile.read('groove_samples/' + wav_filename)
-    
+
     # if stereo
     if data.shape[1] == 2:
-        data_df = pd.DataFrame(data, columns = ['l', 'r'])                
+        data_df = pd.DataFrame(data, columns = ['l', 'r'])
         data_df['lr'] = (data_df['l'] + data_df['r'])/2
     else:
         data_df = pd.DataFrame(data, columns = ['lr'])
-    
+
     #make all numbers >=0
     data_df['lr_abs'] = abs(data_df['lr'])
     return data_df, genre
@@ -127,7 +126,7 @@ def cluster_notes_into_volume_levels(data_df):
     #identifying notes and clustering them into 3 different 'volume' levels
     all_notes_index = data_df[data_df['lr_abs_mean_mean']>0].index.tolist()
     df_notes = data_df.loc[all_notes_index,:].copy()
-    
+
     kmeans = KMeans(n_clusters=3)
     kmeans.fit(np.array(df_notes['lr_abs_mean_mean_z']).reshape(-1,1))
     df_notes['cluster_label'] = kmeans.labels_
@@ -180,7 +179,7 @@ def create_classifier(meta_data_df):
         df_test = df_test.loc[test_index, :]
         #assigning features
         features = meta_data_df.columns.difference(['genre']).tolist()
-        
+
         classifier = xgb.XGBClassifier()
         #fitting, predicting, and checking accuracy of classifier
         classifier.fit(df_train[features], df_train['genre'])
@@ -217,7 +216,7 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
-           'genre']    
+           'genre']
 meta_data_df = pd.DataFrame(rows, columns=columns)
 meta_data_df.to_pickle('meta_data_df.pkl')
 meta_data_df = pd.read_pickle('meta_data_df.pkl')
@@ -227,5 +226,3 @@ best_classifier, average_accuracy = create_classifier(meta_data_df)
 
 #save best_classifier model
 pickle.dump(best_classifier, open('groove_classifier.pkl.dat', 'wb'))
-
-    
