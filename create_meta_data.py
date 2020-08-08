@@ -1,16 +1,9 @@
-import os
 import pandas as pd
 import numpy as np
 from scipy.io import wavfile
-from matplotlib import pyplot as plt
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.cluster import KMeans
-from sklearn.metrics import mean_squared_error, accuracy_score
 import seaborn as sns
-import xgboost as xgb
-import graphviz
 import math
-import pickle
 import re
 
 ############################## functions ##############################
@@ -137,11 +130,8 @@ def cluster_notes_into_volume_levels(data_df):
 
 
 
-def calc_note_stats(df, #col_name,
-                    cluster_label, tot_time):
-    # note_index = df[df[col_name]>0].index.tolist()
+def calc_note_stats(df, cluster_label, tot_time):
     note_index = df[df['cluster_label']==cluster_label].index.tolist()
-    # tot_time = max(note_index) - min(note_index)
     spaces = []
     for i in range(1,len(note_index)):
         spaces.append(note_index[i] - note_index[i-1])

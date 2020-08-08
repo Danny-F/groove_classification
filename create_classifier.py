@@ -5,21 +5,13 @@ Created on Sat Jan 18 14:34:31 2020
 @author: danny
 """
 
-import os
 import pandas as pd
 import numpy as np
-from scipy.io import wavfile
-from matplotlib import pyplot as plt
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.cluster import KMeans
-from sklearn.metrics import mean_squared_error, accuracy_score
+from sklearn.metrics import accuracy_score
 import seaborn as sns
 import xgboost as xgb
-import graphviz
-import math
 import pickle
-import re
-from create_meta_data import *
+import create_meta_data
 
 
 
@@ -69,7 +61,7 @@ rows = []
 for genre in genres:
     for num in range(1,num_per_genre+1):
         wav_filename = genre + '_' + str(num) + '.wav'
-        rows.append(create_meta_data(wav_filename))
+        rows.append(create_meta_data.create_meta_data(wav_filename))
 
 columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'note_count_med', 'note_hz_med', 'avg_space_med',

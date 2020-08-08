@@ -5,20 +5,8 @@ Created on Sun Feb  9 16:36:18 2020
 @author: danny
 """
 
-import os
 import pandas as pd
-import numpy as np
-from scipy.io import wavfile
-from matplotlib import pyplot as plt
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.cluster import KMeans
-from sklearn.metrics import mean_squared_error, accuracy_score
-import seaborn as sns
-import xgboost as xgb
-import graphviz
-import math
 import pickle
-import re
 from create_meta_data import *
 
 ############################## execution ##############################
