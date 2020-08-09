@@ -34,4 +34,4 @@ features = meta_data_df.columns.difference(['genre']).tolist()
 actual = meta_data_df['genre'][0]
 prediction = classifier.predict(meta_data_df[features])[0]
 
-print('Actual: {}\nPrediction: {}'.format(actual, prediction))
+print('The drum groove was categorized as: {}'.format(actual, prediction))

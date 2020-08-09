@@ -17,3 +17,7 @@ Python packages:
 - scipy
 - math
 - re
+
+# Notes
+- The create_classifier.py script is used to train and create the model.
+- The classify_groove.py script uses the stored model to classify a new drum beat/groove.
