@@ -5,7 +5,7 @@ Being passionate about drumming and data science, I wanted to combine the two in
 
 95% of the code serves the purpose of manipulating the .wav file and extracting features that the model is able to ingest. Because this was a classification problem, I chose to use the the XGBoost classification model.
 
-The training/test data consists of 120 different drum grooves that are between 10-15 seconds each. I collected the data for this project by playing grooves on my electric drumset, recording 30 grooves for each of the 4 categories (rock, funk, Latin, jazz). My electric drumset records in 44.5 hz which means for each groove I was collected 44.5k rows of data per second of recording.
+The training/test data consists of 120 different drum grooves that are between 10-15 seconds each. I collected the data for this project by playing grooves on my electric drumset, recording 30 grooves for each of the 4 categories (rock, funk, Latin, jazz). My electric drumset records in 44.1 khz which means for each groove I collected 44.1k rows of data per second of recording.
 
 # Requirements
 Python packages:
