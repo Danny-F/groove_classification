@@ -6,7 +6,9 @@ from sklearn.cluster import KMeans
 import seaborn as sns
 import math
 import re
-
+import pandas as pd
+from matplotlib import pyplot as plt
+import streamlit as st
 ############################## functions ##############################
 
 
@@ -57,6 +59,7 @@ def read_and_format_wav_file(wav_filename):
 
     rate, data = wavfile.read('groove_samples/' + wav_filename)
 
+
     # if stereo
     if data.shape[1] == 2:
         data_df = pd.DataFrame(data, columns = ['l', 'r'])
@@ -64,8 +67,18 @@ def read_and_format_wav_file(wav_filename):
     else:
         data_df = pd.DataFrame(data, columns = ['lr'])
 
+    fig, ax = plt.subplots()
+    ax.plot(data_df['lr'])
+    st.pyplot(fig)
+
+
     #make all numbers >=0
     data_df['lr_abs'] = abs(data_df['lr'])
+
+    fig, ax = plt.subplots()
+    ax.plot(data_df['lr_abs'])
+    st.pyplot(fig)
+
     return data_df, genre
 
 
@@ -81,6 +94,11 @@ def smooth_out_volume(data_df):
     data_df['lr_abs_mean'] = data_df.groupby(['group_num'])['lr_abs'].transform('mean')
     data_df.loc[data_df['lr_abs_mean']<100, 'lr_abs_mean'] = 0
     data_df = data_df.drop_duplicates(['group_num']).reset_index(drop=True)
+
+    fig, ax = plt.subplots()
+    ax.plot(data_df['lr_abs_mean'])
+    st.pyplot(fig)
+
     return data_df
 
 
@@ -91,6 +109,11 @@ def calculate_average_volume_per_note(data_df):
     data_df['counter'] = create_counter_col(data_df, 'lr_abs_mean')
     data_df['lr_abs_mean_mean'] = data_df.groupby(['counter'])['lr_abs_mean'].transform('mean')
     data_df = data_df[['counter', 'lr_abs_mean_mean']].drop_duplicates().reset_index(drop=True)
+
+    fig, ax = plt.subplots()
+    ax.plot(data_df['lr_abs_mean_mean'])
+    st.pyplot(fig)
+    
     return data_df
 
 def create_counter_col(df, col_name):
@@ -126,6 +149,16 @@ def cluster_notes_into_volume_levels(data_df):
     data_df['cluster_label'] = df_notes['cluster_label']
     #calculate total groove time (ignoring dead space before and after the groove)
     tot_time = max(all_notes_index) - min(all_notes_index)
+
+    fig, ax = plt.subplots()
+    ax.plot(data_df['lr_abs_mean_mean'],ls='')
+    # ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
+    ax.plot(data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
+    ax.plot(data_df.loc[data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+    ax.plot(data_df.loc[data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
+    st.pyplot(fig)
+    st.stop()
+
     return data_df, tot_time
 
 
