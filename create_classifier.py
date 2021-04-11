@@ -69,12 +69,24 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
            'genre']
+
 meta_data_df = pd.DataFrame(rows, columns=columns)
 meta_data_df.to_pickle('meta_data_df.pkl')
 meta_data_df = pd.read_pickle('meta_data_df.pkl')
 
+columns = [
+           'note_count_high', 'avg_space_high',
+           'note_count_med', 'avg_space_med',
+           'note_count_low', 'avg_space_low',
+           'high_med_note_ratio', 'high_med_space_ratio',
+           'high_low_note_ratio', 'high_low_space_ratio',
+           'med_low_note_ratio', 'med_low_space_ratio',
+           'genre']
+meta_data_df = meta_data_df[columns].copy()
+
 #create classifier
 best_classifier, average_accuracy = create_classifier(meta_data_df)
+print(average_accuracy)
 
 #save best_classifier model
 pickle.dump(best_classifier, open('groove_classifier.pkl.dat', 'wb'))

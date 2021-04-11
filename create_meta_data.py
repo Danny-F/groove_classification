@@ -79,6 +79,8 @@ def read_and_format_wav_file(wav_filename):
     # ax.plot(data_df['lr_abs'])
     # st.pyplot(fig)
 
+    data_df['original_length'] = data_df.shape[0]
+
     return data_df, genre
 
 
@@ -170,5 +172,11 @@ def calc_note_stats(df, cluster_label, tot_time):
         spaces.append(note_index[i] - note_index[i-1])
     note_count = len(note_index)
     notes_hz = note_count/tot_time
-    avg_space = np.mean(spaces)
+    if note_count > 2:
+        avg_space = np.mean(spaces)/np.std(spaces)
+    else:
+        avg_space = np.nan
     return note_count, notes_hz, avg_space
+
+
+########## execution #########
