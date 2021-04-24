@@ -46,6 +46,42 @@ def create_meta_data_for_all_files(filename_options):
 	meta_data_df = pd.DataFrame(rows, columns=columns)
 	return meta_data_df
 
+
+def plot_meta_data_graph(plot_data_dict):
+	plot12_data_df = plot_data_dict['plot12']
+	plot3_data_df = plot_data_dict['plot3']
+	plot4_data_df = plot_data_dict['plot4']
+	plot5_data_df = plot_data_dict['plot5']
+
+	# Plot 1: initial pull
+	fig1, ax = plt.subplots()
+	ax.plot(plot12_data_df['lr'])
+	# Plot 2: abs value of initial pull
+	fig2, ax = plt.subplots()
+	ax.plot(plot12_data_df['lr_abs'])
+	# Plot 3: smoothed out (mean of each 100 rows)
+	fig3, ax = plt.subplots()
+	ax.plot(plot3_data_df['lr_abs_mean'])
+	# Plot 4: mean of each "note" (grouping of numbers with no 0s in between)
+	fig4, ax = plt.subplots()
+	ax.plot(plot4_data_df['lr_abs_mean_mean'])
+	# Plot 5: plot of each "note" and which volume it got clustered into
+	fig5, ax = plt.subplots()
+	ax.plot(plot5_data_df['lr_abs_mean_mean'],ls='')
+	# ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+	col1, col2 = st.beta_columns(2)
+	with col1:
+		st.pyplot(fig1, use_container_width=True)
+		st.pyplot(fig3, use_container_width=True)
+		st.pyplot(fig5, use_container_width=True)
+	with col2:
+		st.pyplot(fig2, use_container_width=True)
+		st.pyplot(fig4, use_container_width=True)
+
+
 ##################### execution ###########################
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
@@ -62,7 +98,8 @@ audio_bytes = audio_file.read()
 st.sidebar.audio(audio_bytes, format='audio/ogg')
 
 rows = []
-rows.append(create_meta_data.create_meta_data(wav_filename))
+row, plot_data_dict = create_meta_data.create_meta_data(wav_filename)
+rows.append(row)
 
 columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'note_count_med', 'note_hz_med', 'avg_space_med',
@@ -73,6 +110,38 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'genre']
 single_file_data_df = pd.DataFrame(rows, columns=columns)
 single_file_data_df['genre'] = 'Chosen File'
+
+plot_meta_data_graph(plot_data_dict)
+
+# trying to find a single high note
+plot12_df = plot_data_dict['plot12']
+plot3_df = plot_data_dict['plot3']
+plot4_df = plot_data_dict['plot4']
+plot5_df = plot_data_dict['plot5']
+first_high_vol_note = plot5_df[plot5_df['cluster_label']==2].index[0]
+highest_vol = plot5_df['lr_abs_mean_mean'].max()
+highest_vol = math.ceil(highest_vol/100) * 100
+start = first_high_vol_note
+fig1, ax = plt.subplots()
+ax.plot(plot12_df.loc[(start-100)*100:start*100, 'lr'])
+fig2, ax = plt.subplots()
+ax.plot(plot12_df.loc[(start-100)*100:start*100, 'lr_abs'])
+fig3, ax = plt.subplots()
+ax.plot(plot3_df.loc[start-100:start, 'lr_abs_mean'])
+fig4, ax = plt.subplots()
+ax.plot(plot4_df.loc[start-100:start, 'lr_abs_mean_mean'])
+fig5, ax = plt.subplots()
+ax.plot(plot5_df.loc[start:start,'lr_abs_mean_mean'],ls='', marker='.', color='green')
+ax.set_ylim([0,highest_vol])
+
+col1, col2 = st.beta_columns(2)
+with col1:
+	st.pyplot(fig1, use_container_width=True)
+	st.pyplot(fig3, use_container_width=True)
+	st.pyplot(fig5, use_container_width=True)
+with col2:
+	st.pyplot(fig2, use_container_width=True)
+	st.pyplot(fig4, use_container_width=True)
 
 
 
@@ -88,7 +157,6 @@ features = [
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio']
 importances_df = pd.DataFrame({'feature': features, 'importance':importances})
-st.dataframe(importances_df)
 
 fig = px.bar(importances_df, x='feature', y='importance')
 st.plotly_chart(fig)

@@ -14,16 +14,16 @@ import streamlit as st
 
 def create_meta_data(wav_filename):
 
-    data_df, genre = read_and_format_wav_file(wav_filename)
+    data_df, genre, plot12_data_df = read_and_format_wav_file(wav_filename)
 
-    data_df = smooth_out_volume(data_df)
+    data_df, plot3_data_df = smooth_out_volume(data_df)
 
-    data_df = calculate_average_volume_per_note(data_df)
+    data_df, plot4_data_df = calculate_average_volume_per_note(data_df)
 
     #normalizing the data
     data_df['lr_abs_mean_mean_z'] = (data_df['lr_abs_mean_mean'] - data_df['lr_abs_mean_mean'].mean())/data_df['lr_abs_mean_mean'].std()
 
-    data_df, tot_time = cluster_notes_into_volume_levels(data_df)
+    data_df, tot_time, plot5_data_df = cluster_notes_into_volume_levels(data_df)
 
     #calculating meta data
     note_count_high, note_hz_high, avg_space_high = calc_note_stats(data_df, 2, tot_time)
@@ -47,7 +47,8 @@ def create_meta_data(wav_filename):
                  high_low_note_ratio, high_low_space_ratio,
                  med_low_note_ratio, med_low_space_ratio,
                  genre]
-    return row
+    plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
+    return row, plot_data_dict
 
 
 
@@ -67,21 +68,14 @@ def read_and_format_wav_file(wav_filename):
     else:
         data_df = pd.DataFrame(data, columns = ['lr'])
 
-    # fig, ax = plt.subplots()
-    # ax.plot(data_df['lr'])
-    # st.pyplot(fig)
-
-
     #make all numbers >=0
     data_df['lr_abs'] = abs(data_df['lr'])
 
-    # fig, ax = plt.subplots()
-    # ax.plot(data_df['lr_abs'])
-    # st.pyplot(fig)
-
     data_df['original_length'] = data_df.shape[0]
 
-    return data_df, genre
+    plot12_data_df = data_df.copy()
+
+    return data_df, genre, plot12_data_df
 
 
 
@@ -97,11 +91,9 @@ def smooth_out_volume(data_df):
     data_df.loc[data_df['lr_abs_mean']<100, 'lr_abs_mean'] = 0
     data_df = data_df.drop_duplicates(['group_num']).reset_index(drop=True)
 
-    # fig, ax = plt.subplots()
-    # ax.plot(data_df['lr_abs_mean'])
-    # st.pyplot(fig)
+    plot3_data_df = data_df.copy()
 
-    return data_df
+    return data_df, plot3_data_df
 
 
 
@@ -112,11 +104,9 @@ def calculate_average_volume_per_note(data_df):
     data_df['lr_abs_mean_mean'] = data_df.groupby(['counter'])['lr_abs_mean'].transform('mean')
     data_df = data_df[['counter', 'lr_abs_mean_mean']].drop_duplicates().reset_index(drop=True)
 
-    # fig, ax = plt.subplots()
-    # ax.plot(data_df['lr_abs_mean_mean'])
-    # st.pyplot(fig)
+    plot4_data_df = data_df.copy()
 
-    return data_df
+    return data_df, plot4_data_df
 
 def create_counter_col(df, col_name):
     counter_col = []
@@ -152,15 +142,9 @@ def cluster_notes_into_volume_levels(data_df):
     #calculate total groove time (ignoring dead space before and after the groove)
     tot_time = max(all_notes_index) - min(all_notes_index)
 
-    # fig, ax = plt.subplots()
-    # ax.plot(data_df['lr_abs_mean_mean'],ls='')
-    # # ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
-    # ax.plot(data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
-    # ax.plot(data_df.loc[data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
-    # ax.plot(data_df.loc[data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
-    # st.pyplot(fig)
+    plot5_data_df = data_df.copy()
 
-    return data_df, tot_time
+    return data_df, tot_time, plot5_data_df
 
 
 
