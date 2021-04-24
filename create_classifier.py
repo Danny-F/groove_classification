@@ -90,3 +90,6 @@ print(average_accuracy)
 
 #save best_classifier model
 pickle.dump(best_classifier, open('groove_classifier.pkl.dat', 'wb'))
+
+
+#TODO: calc avg volume for each set of high,med,low vol notes and put med on scale 1-3

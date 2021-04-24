@@ -48,7 +48,7 @@ def create_meta_data(wav_filename):
                  med_low_note_ratio, med_low_space_ratio,
                  genre]
     plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
-    return row, plot_data_dict
+    return row #, plot_data_dict
 
 
 
@@ -82,7 +82,7 @@ def read_and_format_wav_file(wav_filename):
 
 def smooth_out_volume(data_df):
     #smooth out data (getting rid of random small pockets of 0's)
-    group_size = 300
+    group_size = 100
     group_num = [[x]*group_size for x in range(math.ceil(len(data_df)/group_size))]
     group_num = [x for b in group_num for x in b]
     group_num = group_num[0:len(data_df)]
