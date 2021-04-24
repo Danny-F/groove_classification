@@ -122,26 +122,46 @@ first_high_vol_note = plot5_df[plot5_df['cluster_label']==2].index[0]
 highest_vol = plot5_df['lr_abs_mean_mean'].max()
 highest_vol = math.ceil(highest_vol/100) * 100
 start = first_high_vol_note
+end = plot3_df[plot3_df['counter']==start].index.max()
+
+# st.dataframe(plot5_df)
+# st.dataframe(plot12_df.loc[(start-100)*100:(start+100)*100, 'lr'])
 fig1, ax = plt.subplots()
-ax.plot(plot12_df.loc[(start-100)*100:start*100, 'lr'])
+fig1.suptitle('Step 1', fontsize=20)
+ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr'])
 fig2, ax = plt.subplots()
-ax.plot(plot12_df.loc[(start-100)*100:start*100, 'lr_abs'])
+fig2.suptitle('Step 2', fontsize=20)
+ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr_abs'])
 fig3, ax = plt.subplots()
-ax.plot(plot3_df.loc[start-100:start, 'lr_abs_mean'])
+fig3.suptitle('Step 3', fontsize=20)
+ax.plot(plot3_df.loc[start-50:end+50, 'lr_abs_mean'])
 fig4, ax = plt.subplots()
-ax.plot(plot4_df.loc[start-100:start, 'lr_abs_mean_mean'])
+fig4.suptitle('Step 4', fontsize=20)
+ax.plot(plot4_df.loc[start-10:start+10, 'lr_abs_mean_mean'])
+ax.set_xlim([start-5,start+5])
+ax.set_xticks(np.arange(start-5, start + 5, 1))
 fig5, ax = plt.subplots()
+fig5.suptitle('Step 5', fontsize=20)
 ax.plot(plot5_df.loc[start:start,'lr_abs_mean_mean'],ls='', marker='.', color='green')
+ax.set_xlim([start-5,start+5])
+ax.set_xticks(np.arange(start-5, start + 5, 1))
 ax.set_ylim([0,highest_vol])
 
-col1, col2 = st.beta_columns(2)
+col1, col2, col3 = st.beta_columns(3)
 with col1:
 	st.pyplot(fig1, use_container_width=True)
-	st.pyplot(fig3, use_container_width=True)
-	st.pyplot(fig5, use_container_width=True)
-with col2:
 	st.pyplot(fig2, use_container_width=True)
+with col2:
+	st.write('')
+	st.write('')
+	st.write('')
+	st.write('')
+	st.write('')
+	st.write('')
+	st.pyplot(fig3, use_container_width=True)
+with col3:
 	st.pyplot(fig4, use_container_width=True)
+	st.pyplot(fig5, use_container_width=True)
 
 
 

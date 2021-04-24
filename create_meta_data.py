@@ -16,9 +16,9 @@ def create_meta_data(wav_filename):
 
     data_df, genre, plot12_data_df = read_and_format_wav_file(wav_filename)
 
-    data_df, plot3_data_df = smooth_out_volume(data_df)
+    data_df = smooth_out_volume(data_df)
 
-    data_df, plot4_data_df = calculate_average_volume_per_note(data_df)
+    data_df, plot3_data_df, plot4_data_df = calculate_average_volume_per_note(data_df)
 
     #normalizing the data
     data_df['lr_abs_mean_mean_z'] = (data_df['lr_abs_mean_mean'] - data_df['lr_abs_mean_mean'].mean())/data_df['lr_abs_mean_mean'].std()
@@ -91,9 +91,7 @@ def smooth_out_volume(data_df):
     data_df.loc[data_df['lr_abs_mean']<100, 'lr_abs_mean'] = 0
     data_df = data_df.drop_duplicates(['group_num']).reset_index(drop=True)
 
-    plot3_data_df = data_df.copy()
-
-    return data_df, plot3_data_df
+    return data_df
 
 
 
@@ -101,12 +99,13 @@ def smooth_out_volume(data_df):
 def calculate_average_volume_per_note(data_df):
     #average values for each 'note' (groupings of values > 0 separated by values of 0)
     data_df['counter'] = create_counter_col(data_df, 'lr_abs_mean')
+    plot3_data_df = data_df.copy()
     data_df['lr_abs_mean_mean'] = data_df.groupby(['counter'])['lr_abs_mean'].transform('mean')
     data_df = data_df[['counter', 'lr_abs_mean_mean']].drop_duplicates().reset_index(drop=True)
 
     plot4_data_df = data_df.copy()
 
-    return data_df, plot4_data_df
+    return data_df, plot3_data_df, plot4_data_df
 
 def create_counter_col(df, col_name):
     counter_col = []
