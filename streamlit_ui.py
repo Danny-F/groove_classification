@@ -114,37 +114,41 @@ single_file_data_df['genre'] = 'Chosen File'
 plot_meta_data_graph(plot_data_dict)
 
 # trying to find a single high note
+# defining dfs
 plot12_df = plot_data_dict['plot12']
 plot3_df = plot_data_dict['plot3']
 plot4_df = plot_data_dict['plot4']
 plot5_df = plot_data_dict['plot5']
+# get diff x axis plot values defined
 first_high_vol_note = plot5_df[plot5_df['cluster_label']==2].index[0]
 highest_vol = plot5_df['lr_abs_mean_mean'].max()
 highest_vol = math.ceil(highest_vol/100) * 100
-start = first_high_vol_note
-end = plot3_df[plot3_df['counter']==start].index.max()
+start = plot3_df[plot3_df['counter']==first_high_vol_note].index.min()
+end = plot3_df[plot3_df['counter']==first_high_vol_note].index.max()
+all_notes_in_graph_view = plot3_df.loc[start-50:end+50, ['l', 'counter']].groupby('counter').agg('count')
+all_notes_in_graph_view = all_notes_in_graph_view[all_notes_in_graph_view['l']>1].index.tolist()
+st.write(all_notes_in_graph_view)
+first_note_in_view = min(all_notes_in_graph_view)
+last_note_in_view = max(all_notes_in_graph_view)
+
 
 # st.dataframe(plot5_df)
 # st.dataframe(plot12_df.loc[(start-100)*100:(start+100)*100, 'lr'])
 fig1, ax = plt.subplots()
 fig1.suptitle('Step 1', fontsize=20)
-ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr'])
+ax.plot(plot12_df.loc[(start-50)*300:(end+50)*300, 'lr'])
 fig2, ax = plt.subplots()
 fig2.suptitle('Step 2', fontsize=20)
-ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr_abs'])
+ax.plot(plot12_df.loc[(start-50)*300:(end+50)*300, 'lr_abs'])
 fig3, ax = plt.subplots()
 fig3.suptitle('Step 3', fontsize=20)
 ax.plot(plot3_df.loc[start-50:end+50, 'lr_abs_mean'])
 fig4, ax = plt.subplots()
 fig4.suptitle('Step 4', fontsize=20)
-ax.plot(plot4_df.loc[start-10:start+10, 'lr_abs_mean_mean'])
-ax.set_xlim([start-5,start+5])
-ax.set_xticks(np.arange(start-5, start + 5, 1))
+ax.plot(plot4_df.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'])
 fig5, ax = plt.subplots()
 fig5.suptitle('Step 5', fontsize=20)
-ax.plot(plot5_df.loc[start:start,'lr_abs_mean_mean'],ls='', marker='.', color='green')
-ax.set_xlim([start-5,start+5])
-ax.set_xticks(np.arange(start-5, start + 5, 1))
+ax.plot(plot5_df.loc[first_note_in_view-1:last_note_in_view+1,'lr_abs_mean_mean'],ls='', marker='.', color='green')
 ax.set_ylim([0,highest_vol])
 
 col1, col2, col3 = st.beta_columns(3)
