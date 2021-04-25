@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+from scipy import stats
 from scipy.io import wavfile
 from matplotlib import pyplot as plt
 from sklearn.neighbors import KNeighborsRegressor
@@ -55,37 +56,51 @@ def plot_meta_data_graph(plot_data_dict):
 
 	# Plot 1: initial pull
 	fig1, ax = plt.subplots()
+	fig1.suptitle('Original', fontsize=20)
 	ax.plot(plot12_data_df['lr'])
 	# Plot 2: abs value of initial pull
 	fig2, ax = plt.subplots()
+	fig2.suptitle('Step 1', fontsize=20)
 	ax.plot(plot12_data_df['lr_abs'])
 	# Plot 3: smoothed out (mean of each 100 rows)
 	fig3, ax = plt.subplots()
+	fig3.suptitle('Step 2', fontsize=20)
 	ax.plot(plot3_data_df['lr_abs_mean'])
 	# Plot 4: mean of each "note" (grouping of numbers with no 0s in between)
 	fig4, ax = plt.subplots()
+	fig4.suptitle('Step 3', fontsize=20)
 	ax.plot(plot4_data_df['lr_abs_mean_mean'])
 	# Plot 5: plot of each "note" and which volume it got clustered into
 	fig5, ax = plt.subplots()
+	fig5.suptitle('Step 4', fontsize=20)
 	ax.plot(plot5_data_df['lr_abs_mean_mean'],ls='')
 	# ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
-	col1, col2 = st.beta_columns(2)
+	st.subheader('Full Audio Clip')
+	col1, col2, col3 = st.beta_columns(3)
 	with col1:
 		st.pyplot(fig1, use_container_width=True)
-		st.pyplot(fig3, use_container_width=True)
-		st.pyplot(fig5, use_container_width=True)
-	with col2:
 		st.pyplot(fig2, use_container_width=True)
+	with col2:
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.pyplot(fig3, use_container_width=True)
+	with col3:
 		st.pyplot(fig4, use_container_width=True)
+		st.pyplot(fig5, use_container_width=True)
 
 
 ##################### execution ###########################
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
 filename_options = ['{}_{}'.format(genre, num+1) for genre in genres for num in range(30)]
+filename_options = ['newsample_{}'.format(num+1) for num in range(8)] + filename_options
 wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
@@ -106,7 +121,7 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'note_count_low', 'note_hz_low', 'avg_space_low',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
-           'med_low_note_ratio', 'med_low_space_ratio',
+           'med_low_note_ratio', 'med_low_space_ratio', 'med_vol_scale',
            'genre']
 single_file_data_df = pd.DataFrame(rows, columns=columns)
 single_file_data_df['genre'] = 'Chosen File'
@@ -127,7 +142,6 @@ start = plot3_df[plot3_df['counter']==first_high_vol_note].index.min()
 end = plot3_df[plot3_df['counter']==first_high_vol_note].index.max()
 all_notes_in_graph_view = plot3_df.loc[start-50:end+50, ['l', 'counter']].groupby('counter').agg('count')
 all_notes_in_graph_view = all_notes_in_graph_view[all_notes_in_graph_view['l']>1].index.tolist()
-st.write(all_notes_in_graph_view)
 first_note_in_view = min(all_notes_in_graph_view)
 last_note_in_view = max(all_notes_in_graph_view)
 
@@ -135,22 +149,22 @@ last_note_in_view = max(all_notes_in_graph_view)
 # st.dataframe(plot5_df)
 # st.dataframe(plot12_df.loc[(start-100)*100:(start+100)*100, 'lr'])
 fig1, ax = plt.subplots()
-fig1.suptitle('Step 1', fontsize=20)
+fig1.suptitle('Original', fontsize=20)
 ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr'])
 fig2, ax = plt.subplots()
-fig2.suptitle('Step 2', fontsize=20)
+fig2.suptitle('Step 1', fontsize=20)
 ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr_abs'])
 fig3, ax = plt.subplots()
-fig3.suptitle('Step 3', fontsize=20)
+fig3.suptitle('Step 2', fontsize=20)
 ax.plot(plot3_df.loc[start-50:end+50, 'lr_abs_mean'])
 fig4, ax = plt.subplots()
-fig4.suptitle('Step 4', fontsize=20)
+fig4.suptitle('Step 3', fontsize=20)
 ax.plot(plot4_df.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'])
 fig5, ax = plt.subplots()
-fig5.suptitle('Step 5', fontsize=20)
+fig5.suptitle('Step 4', fontsize=20)
 ax.plot(plot5_df.loc[first_note_in_view-1:last_note_in_view+1,'lr_abs_mean_mean'],ls='', marker='.', color='green')
 ax.set_ylim([0,highest_vol])
-
+st.subheader('Zoomed-in View on the First Note(s)')
 col1, col2, col3 = st.beta_columns(3)
 with col1:
 	st.pyplot(fig1, use_container_width=True)
@@ -179,11 +193,11 @@ features = [
            'note_count_low', 'avg_space_low',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
-           'med_low_note_ratio', 'med_low_space_ratio']
+           'med_low_note_ratio', 'med_low_space_ratio', 'med_vol_scale']
 importances_df = pd.DataFrame({'feature': features, 'importance':importances})
 
 fig = px.bar(importances_df, x='feature', y='importance')
-st.plotly_chart(fig)
+# st.plotly_chart(fig)
 
 
 columns = ['note_count_high', 'avg_space_high',
@@ -192,6 +206,7 @@ columns = ['note_count_high', 'avg_space_high',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio']
+
 
 grpd_all_mdata = all_mdata.groupby(['genre'])[columns].mean()
 bar_mdata = grpd_all_mdata.reset_index()
@@ -230,11 +245,17 @@ for graph_title, graph_columns in bargraph_values.items():
 					   )
 	st.plotly_chart(fig, use_container_width=True)
 
-st.stop()
 
-
-features = meta_data_df.columns.difference(['genre']).tolist()
-st.table(meta_data_df.loc[:,meta_data_df.columns.difference(['genre']).tolist()].T)
-
-actual = meta_data_df['genre'][0]
-prediction = classifier.predict(meta_data_df[features])[0]
+features =  [
+           'note_count_high', 'avg_space_high',
+           'note_count_med', 'avg_space_med',
+           'note_count_low', 'avg_space_low',
+           'high_med_note_ratio', 'high_med_space_ratio',
+           'high_low_note_ratio', 'high_low_space_ratio',
+           'med_low_note_ratio', 'med_low_space_ratio',
+           'med_vol_scale']
+# model expects columns in abc order
+features.sort()
+actual = single_file_data_df['genre'][0]
+prediction = classifier.predict(single_file_data_df[features])[0]
+st.write(prediction)

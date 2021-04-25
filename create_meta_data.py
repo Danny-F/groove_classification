@@ -26,9 +26,9 @@ def create_meta_data(wav_filename):
     data_df, tot_time, plot5_data_df = cluster_notes_into_volume_levels(data_df)
 
     #calculating meta data
-    note_count_high, note_hz_high, avg_space_high = calc_note_stats(data_df, 2, tot_time)
-    note_count_med, note_hz_med, avg_space_med = calc_note_stats(data_df, 1, tot_time)
-    note_count_low, note_hz_low, avg_space_low = calc_note_stats(data_df, 0, tot_time)
+    note_count_high, note_hz_high, avg_space_high, high_vol_avg = calc_note_stats(data_df, 2, tot_time)
+    note_count_med, note_hz_med, avg_space_med, med_vol_avg = calc_note_stats(data_df, 1, tot_time)
+    note_count_low, note_hz_low, avg_space_low, low_vol_avg = calc_note_stats(data_df, 0, tot_time)
 
     high_med_note_ratio = note_count_high/note_count_med
     high_med_space_ratio = avg_space_high/avg_space_med
@@ -39,6 +39,8 @@ def create_meta_data(wav_filename):
     med_low_note_ratio = note_count_med/note_count_low
     med_low_space_ratio = avg_space_med/avg_space_low
 
+    med_vol_scale = (med_vol_avg - low_vol_avg) / (high_vol_avg - low_vol_avg)
+
     #add all meta data for single groove to a row
     row = [note_count_high, note_hz_high, avg_space_high,
                  note_count_med, note_hz_med, avg_space_med,
@@ -46,9 +48,9 @@ def create_meta_data(wav_filename):
                  high_med_note_ratio, high_med_space_ratio,
                  high_low_note_ratio, high_low_space_ratio,
                  med_low_note_ratio, med_low_space_ratio,
-                 genre]
+                 med_vol_scale, genre]
     plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
-    return row #, plot_data_dict
+    return row , plot_data_dict
 
 
 
@@ -119,6 +121,49 @@ def create_counter_col(df, col_name):
     return counter_col
 
 
+# grouping up low notes that really should just be one single note
+#   However, the were split up due to grouping being 100 which was better for high & med notes
+def create_special_low_notes_counter_col(df, col_name):
+    counter_col = []
+    counter = - 1
+    low_note_counter = 0
+    inbetween = 0
+    for i in range(0, len(df)):
+        if (inbetween > 0) and (inbetween <17):
+            if (df[col_name][i] == 0):
+                counter += 1
+                counter_col.append(low_note_counter)
+                inbetween += 1
+                # st.write(low_note_counter, inbetween, counter)
+            elif (df[col_name][i] in [1,2]):
+                counter += 1
+                counter_col.append(counter)
+                low_note_counter = counter + 1
+                inbetween = 0
+            else:
+                counter += 1
+                counter_col.append(counter)
+                inbetween += 1
+        else:
+            if (df[col_name][i] == 0):
+                counter += 1
+                counter_col.append(low_note_counter)
+                inbetween += 1
+            elif df[col_name][i] in [1,2]:
+                counter += 1
+                counter_col.append(counter)
+                low_note_counter = counter + 1
+                inbetween = 0
+            else:
+                counter += 1
+                counter_col.append(counter)
+                low_note_counter = counter + 1
+                inbetween = 0
+    return counter_col
+
+
+
+
 
 
 def cluster_notes_into_volume_levels(data_df):
@@ -138,6 +183,15 @@ def cluster_notes_into_volume_levels(data_df):
     df_notes.loc[df_notes['cluster_mean']==cluster_rank_list[1], 'cluster_label'] = 1
     df_notes.loc[df_notes['cluster_mean']==cluster_rank_list[2], 'cluster_label'] = 2
     data_df['cluster_label'] = df_notes['cluster_label']
+
+    # grouping up low notes that really should just be one single note
+    #   However, the were split up due to grouping being 100 which was better for high & med notes
+    data_df['low_note_counter'] = create_special_low_notes_counter_col(data_df, 'cluster_label')
+    grouped_low_note_values = data_df.groupby('low_note_counter')[['lr_abs_mean_mean', 'lr_abs_mean_mean_z']].agg('mean').reset_index(drop=True)
+    data_df = data_df.drop_duplicates(['low_note_counter']).reset_index(drop=True)
+    data_df[['lr_abs_mean_mean', 'lr_abs_mean_mean_z']] = grouped_low_note_values
+
+
     #calculate total groove time (ignoring dead space before and after the groove)
     tot_time = max(all_notes_index) - min(all_notes_index)
 
@@ -150,6 +204,7 @@ def cluster_notes_into_volume_levels(data_df):
 
 def calc_note_stats(df, cluster_label, tot_time):
     note_index = df[df['cluster_label']==cluster_label].index.tolist()
+    avg_vol = df.loc[df['cluster_label']==cluster_label, 'lr_abs_mean_mean'].mean()
     spaces = []
     for i in range(1,len(note_index)):
         spaces.append(note_index[i] - note_index[i-1])
@@ -159,7 +214,7 @@ def calc_note_stats(df, cluster_label, tot_time):
         avg_space = np.mean(spaces)/np.std(spaces)
     else:
         avg_space = np.nan
-    return note_count, notes_hz, avg_space
+    return note_count, notes_hz, avg_space, avg_vol
 
 
 ########## execution #########

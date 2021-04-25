@@ -44,6 +44,13 @@ def create_classifier(meta_data_df):
     return best_classifier, np.mean(accuracies)
 
 
+def nullify_outliers(df, columns):
+	column_zscores = []
+	for col in columns:
+		values_col = df.loc[~df[col].isnull(), col]
+		zscores = (values_col - values_col.mean())/values_col.std()
+		df.loc[zscores[np.abs(zscores)>=3].index, col] = np.nan
+	return df
 
 ############################## execution ##############################
 
@@ -68,9 +75,13 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
-           'genre']
+           'med_vol_scale',
+            'genre']
 
 meta_data_df = pd.DataFrame(rows, columns=columns)
+columns.remove('genre')
+meta_data_df = nullify_outliers(meta_data_df, columns)
+
 meta_data_df.to_pickle('meta_data_df.pkl')
 meta_data_df = pd.read_pickle('meta_data_df.pkl')
 
@@ -81,7 +92,8 @@ columns = [
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
-           'genre']
+           'med_vol_scale',
+            'genre']
 meta_data_df = meta_data_df[columns].copy()
 
 #create classifier

@@ -31,7 +31,7 @@ features = [
            'note_count_low', 'avg_space_low',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
-           'med_low_note_ratio', 'med_low_space_ratio']
+           'med_low_note_ratio', 'med_low_space_ratio', 'med_vol_scale']
 importances_df = pd.DataFrame({'feature': features, 'importance':importances})
 st.dataframe(importances_df)
 
