@@ -99,12 +99,12 @@ def plot_meta_data_graph(plot_data_dict):
 ##################### execution ###########################
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
-filename_options = ['{}_{}'.format(genre, num+1) for genre in genres for num in range(30)]
+filename_options = ['{}_{} (used for train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
 filename_options = ['newsample_{}'.format(num+1) for num in range(8)] + filename_options
 wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
-wav_filename = wav_filename.replace("'", "")
+wav_filename = wav_filename.replace("'", "").replace(' (used for train/test)', '')
 wav_filename = wav_filename.replace('.wav', '') + '.wav'
 
 # display audio
