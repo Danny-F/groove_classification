@@ -180,17 +180,17 @@ def plot_single_note_graphs(plot_data_dict):
 title_container = st.beta_container()
 title_container.title('Classifying the Genre of a Drum Beat With Machine Learning')
 intro_blurb = """Drumming, like all musical instruments, has common "stereo types" that change for each genre of music.
-Using singing as an example, if you were to turn on a country song, you expect to hear a southern twang in the singer's voice and some long held-out notes. But
+Using singing as an example, if you were to turn on a country song, you would expect to hear a southern twang in the singer's voice and some long held-out notes. But
 if you were to turn on a rap song, you would expect to hear fast and rhythmic singing. These common "stereo types" exist for drum beats as well. Rock beats are loud with a lot of space between notes,
  while Latin grooves are fast and full of finesse.
 
  My goal with this personal project was to create a Machine Learning model that could intake an audio recording from my Electronic Drumset and classify the genre of the drum beat I played.
- I did my best to record 120 grooves on my Electronic Drumset, capturing the common stereo types for 4 different genres of music:
- Rock, Shuffle/Funk (SixEight groove), Latin, and Jazz. For each recording, I played 4 measures at varying speeds which resulted in about 9-15 seconds of audio.
+ I recorded 120 grooves on my Electronic Drumset, and did my best to capture the common stereo types of 4 different genres of music:
+ Rock, Shuffle/Funk (SixEight groove), Latin, and Jazz. For each recording, I played 4 measures of a drum beat at varying speeds which resulted in about 9-15 seconds of drums per audio file.
   My Electronic Drumset records at 44.1 khz which translates into 44.1k rows of data per second of audio (396.9k-661.5k rows per audio file). After transforming each audio file into meta data,
  an XGBoosted Classification model was trained to be able to correctly identify the genre of each Drum Beat at a 90% accuracy rating."""
 
-genre_stereotypes = """The general stereo types/motifs you can expect in each genre are as follows:
+genre_stereotypes = """The general stereotypes/motifs you can expect in each genre are as follows:
 - *Rock:* Big strong hits on the snare a bass drum, with consistent and generally large amounts of space between each note. The Hi-Hat fills in the space between the drum hits.
 - *Shuffle/Funk:* The snare drum contains loud hits with a notable amount of "soft" hits inbetween. More bass drum hits compared to rock. Lots of Hi-Hat notes that vary from soft to loud.
 - *Latin:* The bass drum follows an ever-constant "heart beat" pattern. A "cha-cha" pattern is played around the snare drum and toms. Fast and consistent notes are played on the cymbals. The Hi-Hat sports a constant "chick" (think boom-chick-boom-chick) pattern.
@@ -201,15 +201,15 @@ with title_container.beta_expander('Introduction', expanded=True):
 	st.write(intro_blurb)
 with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
 	st.write(genre_stereotypes)
-title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre.\nView the results below to see if you and the ML model guessed the same!')
+title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre!\nView the results below to see if you and the ML model guessed the same.')
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
-filename_options = ['{}_{} (used for train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
+filename_options = ['{}_{} (used to train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
 filename_options = ['drumbeat_{}'.format(num+1) for num in range(8)] + filename_options
 wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
-wav_filename = wav_filename.replace("'", "").replace(' (used for train/test)', '')
+wav_filename = wav_filename.replace("'", "").replace(' (used to train/test)', '')
 wav_filename = wav_filename.replace('.wav', '') + '.wav'
 
 # display audio
