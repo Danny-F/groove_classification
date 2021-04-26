@@ -47,8 +47,34 @@ def create_meta_data_for_all_files(filename_options):
 	meta_data_df = pd.DataFrame(rows, columns=columns)
 	return meta_data_df
 
+def plot_title_graphs(plot_data_dict):
+	plot12_data_df = plot_data_dict['plot12']
+	plot3_data_df = plot_data_dict['plot3']
+	plot4_data_df = plot_data_dict['plot4']
+	plot5_data_df = plot_data_dict['plot5']
 
-def plot_meta_data_graph(plot_data_dict):
+	# Plot 1: initial pull
+	fig1, ax = plt.subplots()
+	fig1.suptitle('Before', fontsize=20)
+	ax.plot(plot12_data_df['lr'])
+	# Plot 5: plot of each "note" and which volume it got clustered into
+	fig5, ax = plt.subplots()
+	fig5.suptitle('After', fontsize=20)
+	ax.plot(plot5_data_df['lr_abs_mean_mean'],ls='')
+	# ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+	st.subheader('Before/After Audio File Transformation')
+	col1, col2 = st.beta_columns(2)
+	with col1:
+		st.pyplot(fig1, use_container_width=True)
+	with col2:
+		st.pyplot(fig5, use_container_width=True)
+	st.write('')
+
+
+def plot_meta_data_graphs(plot_data_dict):
 	plot12_data_df = plot_data_dict['plot12']
 	plot3_data_df = plot_data_dict['plot3']
 	plot4_data_df = plot_data_dict['plot4']
@@ -78,7 +104,7 @@ def plot_meta_data_graph(plot_data_dict):
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
-	st.subheader('Full Audio Clip')
+	st.subheader('Full Audio Clip: Step-by-Step Transformation')
 	col1, col2, col3 = st.beta_columns(3)
 	with col1:
 		st.pyplot(fig1, use_container_width=True)
@@ -94,13 +120,92 @@ def plot_meta_data_graph(plot_data_dict):
 	with col3:
 		st.pyplot(fig4, use_container_width=True)
 		st.pyplot(fig5, use_container_width=True)
+	st.write('')
+
+
+def plot_single_note_graphs(plot_data_dict):
+	# defining dfs
+	plot12_df = plot_data_dict['plot12']
+	plot3_df = plot_data_dict['plot3']
+	plot4_df = plot_data_dict['plot4']
+	plot5_df = plot_data_dict['plot5']
+	# get diff x axis plot values defined
+	first_high_vol_note = plot5_df[plot5_df['cluster_label']==2].index[0]
+	highest_vol = plot5_df['lr_abs_mean_mean'].max()
+	highest_vol = math.ceil(highest_vol/100) * 100
+	start = plot3_df[plot3_df['counter']==first_high_vol_note].index.min()
+	end = plot3_df[plot3_df['counter']==first_high_vol_note].index.max()
+	all_notes_in_graph_view = plot3_df.loc[start-50:end+50, ['l', 'counter']].groupby('counter').agg('count')
+	all_notes_in_graph_view = all_notes_in_graph_view[all_notes_in_graph_view['l']>1].index.tolist()
+	first_note_in_view = min(all_notes_in_graph_view)
+	last_note_in_view = max(all_notes_in_graph_view)
+	# creating graphs
+	fig1, ax = plt.subplots()
+	fig1.suptitle('Original', fontsize=20)
+	ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr'])
+	fig2, ax = plt.subplots()
+	fig2.suptitle('Step 1', fontsize=20)
+	ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr_abs'])
+	fig3, ax = plt.subplots()
+	fig3.suptitle('Step 2', fontsize=20)
+	ax.plot(plot3_df.loc[start-50:end+50, 'lr_abs_mean'])
+	fig4, ax = plt.subplots()
+	fig4.suptitle('Step 3', fontsize=20)
+	ax.plot(plot4_df.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'])
+	fig5, ax = plt.subplots()
+	fig5.suptitle('Step 4', fontsize=20)
+	ax.plot(plot5_df.loc[first_note_in_view-1:last_note_in_view+1,'lr_abs_mean_mean'],ls='', marker='.', color='green')
+	ax.set_ylim([0,highest_vol])
+	st.subheader('Zoomed View on First Note(s): Step-by-Step Transformation')
+	col1, col2, col3 = st.beta_columns(3)
+	with col1:
+		st.pyplot(fig1, use_container_width=True)
+		st.pyplot(fig2, use_container_width=True)
+	with col2:
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.write('')
+		st.pyplot(fig3, use_container_width=True)
+	with col3:
+		st.pyplot(fig4, use_container_width=True)
+		st.pyplot(fig5, use_container_width=True)
+	st.write('')
 
 
 ##################### execution ###########################
+
+title_container = st.beta_container()
+title_container.title('Classifying the Genre of a Drum Beat With Machine Learning')
+intro_blurb = """Drumming, like all musical instruments, has common "stereo types" that change for each genre of music.
+Using singing as an example, if you were to turn on a country song, you expect to hear a southern twang in the singer's voice and some long held-out notes. But
+if you were to turn on a rap song, you would expect to hear fast and rhythmic singing. These common "stereo types" exist for drum beats as well. Rock beats are loud with a lot of space between notes,
+ while Latin grooves are fast and full of finesse.
+
+ My goal with this personal project was to create a Machine Learning model that could intake an audio recording from my Electronic Drumset and classify the genre of the drum beat I played.
+ I did my best to record 120 grooves on my Electronic Drumset, capturing the common stereo types for 4 different genres of music:
+ Rock, Shuffle/Funk (SixEight groove), Latin, and Jazz. For each recording, I played 4 measures at varying speeds which resulted in about 9-15 seconds of audio.
+  My Electronic Drumset records at 44.1 khz which translates into 44.1k rows of data per second of audio (396.9k-661.5k rows per audio file). After transforming each audio file into meta data,
+ an XGBoosted Classification model was trained to be able to correctly identify the genre of each Drum Beat at a 90% accuracy rating."""
+
+genre_stereotypes = """The general stereo types/motifs you can expect in each genre are as follows:
+- *Rock:* Big strong hits on the snare a bass drum, with consistent and generally large amounts of space between each note. The Hi-Hat fills in the space between the drum hits.
+- *Shuffle/Funk:* The snare drum contains loud hits with a notable amount of "soft" hits inbetween. More bass drum hits compared to rock. Lots of Hi-Hat notes that vary from soft to loud.
+- *Latin:* The bass drum follows an ever-constant "heart beat" pattern. A "cha-cha" pattern is played around the snare drum and toms. Fast and consistent notes are played on the cymbals. The Hi-Hat sports a constant "chick" (think boom-chick-boom-chick) pattern.
+- *Jazz:* There are little to no bass drum hits. Snare drum hits seem to be played at random and are meant as a form of embellishment, varying from soft to loud. A constant shuffle-like pattern is played on the cymbal with the Hi-Hat being played on the backbeat
+ (where you would normally expect to hear a snare drum in any rock beat)."""
+
+with title_container.beta_expander('Introduction', expanded=True):
+	st.write(intro_blurb)
+with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
+	st.write(genre_stereotypes)
+title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre.\nView the results below to see if you and the ML model guessed the same!')
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
 filename_options = ['{}_{} (used for train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
-filename_options = ['newsample_{}'.format(num+1) for num in range(8)] + filename_options
+filename_options = ['drumbeat_{}'.format(num+1) for num in range(8)] + filename_options
 wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
@@ -124,62 +229,16 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'med_low_note_ratio', 'med_low_space_ratio', 'med_vol_scale',
            'genre']
 single_file_data_df = pd.DataFrame(rows, columns=columns)
-single_file_data_df['genre'] = 'Chosen File'
-
-plot_meta_data_graph(plot_data_dict)
-
-# trying to find a single high note
-# defining dfs
-plot12_df = plot_data_dict['plot12']
-plot3_df = plot_data_dict['plot3']
-plot4_df = plot_data_dict['plot4']
-plot5_df = plot_data_dict['plot5']
-# get diff x axis plot values defined
-first_high_vol_note = plot5_df[plot5_df['cluster_label']==2].index[0]
-highest_vol = plot5_df['lr_abs_mean_mean'].max()
-highest_vol = math.ceil(highest_vol/100) * 100
-start = plot3_df[plot3_df['counter']==first_high_vol_note].index.min()
-end = plot3_df[plot3_df['counter']==first_high_vol_note].index.max()
-all_notes_in_graph_view = plot3_df.loc[start-50:end+50, ['l', 'counter']].groupby('counter').agg('count')
-all_notes_in_graph_view = all_notes_in_graph_view[all_notes_in_graph_view['l']>1].index.tolist()
-first_note_in_view = min(all_notes_in_graph_view)
-last_note_in_view = max(all_notes_in_graph_view)
+single_file_data_df['genre'] = wav_filename
 
 
-# st.dataframe(plot5_df)
-# st.dataframe(plot12_df.loc[(start-100)*100:(start+100)*100, 'lr'])
-fig1, ax = plt.subplots()
-fig1.suptitle('Original', fontsize=20)
-ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr'])
-fig2, ax = plt.subplots()
-fig2.suptitle('Step 1', fontsize=20)
-ax.plot(plot12_df.loc[(start-50)*100:(end+50)*100, 'lr_abs'])
-fig3, ax = plt.subplots()
-fig3.suptitle('Step 2', fontsize=20)
-ax.plot(plot3_df.loc[start-50:end+50, 'lr_abs_mean'])
-fig4, ax = plt.subplots()
-fig4.suptitle('Step 3', fontsize=20)
-ax.plot(plot4_df.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'])
-fig5, ax = plt.subplots()
-fig5.suptitle('Step 4', fontsize=20)
-ax.plot(plot5_df.loc[first_note_in_view-1:last_note_in_view+1,'lr_abs_mean_mean'],ls='', marker='.', color='green')
-ax.set_ylim([0,highest_vol])
-st.subheader('Zoomed-in View on the First Note(s)')
-col1, col2, col3 = st.beta_columns(3)
-with col1:
-	st.pyplot(fig1, use_container_width=True)
-	st.pyplot(fig2, use_container_width=True)
-with col2:
-	st.write('')
-	st.write('')
-	st.write('')
-	st.write('')
-	st.write('')
-	st.write('')
-	st.pyplot(fig3, use_container_width=True)
-with col3:
-	st.pyplot(fig4, use_container_width=True)
-	st.pyplot(fig5, use_container_width=True)
+st.header('Data Transformation')
+plot_title_graphs(plot_data_dict)
+plot_meta_data_graphs(plot_data_dict)
+plot_single_note_graphs(plot_data_dict)
+st.write('')
+st.write('')
+st.write('')
 
 
 
@@ -200,21 +259,20 @@ fig = px.bar(importances_df, x='feature', y='importance')
 # st.plotly_chart(fig)
 
 
+st.header('Comparing Meta Data From Each Genre')
 columns = ['note_count_high', 'avg_space_high',
            'note_count_med', 'avg_space_med',
            'note_count_low', 'avg_space_low',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio']
-
-
 grpd_all_mdata = all_mdata.groupby(['genre'])[columns].mean()
 bar_mdata = grpd_all_mdata.reset_index()
 # adding the chosen file's meta data
-bar_mdata = pd.concat([bar_mdata, single_file_data_df], ignore_index=True)
+bar_mdata = pd.concat([bar_mdata, single_file_data_df], ignore_index=True, sort=True)
 # changing genre column to categorical type so can use to order graph correctly
 bar_mdata['genre'] = bar_mdata['genre'].replace({'rock':'Rock', 'sixeight':'SixEight', 'latin':'Latin', 'jazz':'Jazz'})
-bar_mdata['genre'] = pd.Categorical(bar_mdata['genre'], ['Rock', 'SixEight', 'Latin', 'Jazz', 'Chosen File'])
+bar_mdata['genre'] = pd.Categorical(bar_mdata['genre'], ['Rock', 'SixEight', 'Latin', 'Jazz', wav_filename])
 bar_mdata = bar_mdata.sort_values(['genre']).reset_index(drop=True)
 
 # creating the graphs
@@ -258,4 +316,9 @@ features =  [
 features.sort()
 actual = single_file_data_df['genre'][0]
 prediction = classifier.predict(single_file_data_df[features])[0]
-st.write(prediction)
+with title_container.beta_expander('View the Results!'):
+	st.subheader('Audio File: `{}`'.format(wav_filename))
+	st.subheader('The Model Chose: `{}`'.format(prediction.capitalize()))
+title_container.write('')
+title_container.write('')
+title_container.write('')
