@@ -264,7 +264,6 @@ with st.beta_expander('Data Transformation: Overview'):
 	st.write(high_level_data_transformation_explanation)
 st.write('')
 st.write('')
-st.write('')
 with st.beta_expander('Data Transformation: Step-By-Step'):
 	st.write(step_by_step_data_transformation_explanation)
 st.write('')
