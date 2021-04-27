@@ -232,7 +232,7 @@ wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
 wav_filename = wav_filename.replace("'", "").replace(' (used to train/test)', '')
-wav_filename = wav_filename.replace('.wav', '')
+wav_filename = wav_filename.replace('.wav', '') + '.WAV'
 
 # display audio
 audio_file = open('groove_samples/' + wav_filename, 'rb')
