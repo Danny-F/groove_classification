@@ -50,7 +50,7 @@ def create_meta_data(wav_filename):
                  med_low_note_ratio, med_low_space_ratio,
                  med_vol_scale, genre]
     plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
-    return row , plot_data_dict
+    return row, plot_data_dict
 
 
 
