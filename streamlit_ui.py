@@ -179,6 +179,8 @@ def plot_single_note_graphs(plot_data_dict):
 
 title_container = st.beta_container()
 title_container.title('Classifying the Genre of a Drum Beat With Machine Learning')
+title_container.write('')
+title_container.write('')
 intro_blurb = """Drumming, like all musical instruments, has common "stereotypes" that change for each genre of music.
 Using singing as an example, if you were to turn on a country song, you would expect to hear a southern twang in the singer's voice and some long held-out notes. But
 if you were to turn on a rap song, you would expect to hear fast and rhythmic singing. These common "stereotypes" exist for drum beats as well. Rock beats are loud with a lot of space between notes,
@@ -221,7 +223,7 @@ with title_container.beta_expander('Introduction', expanded=True):
 	st.write(intro_blurb)
 with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
 	st.write(genre_stereotypes)
-title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre!\nView the results below to see if you and the ML model guessed the same.')
+title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre! View the results below to see if you and the ML model guessed the same.')
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
 filename_options = ['{}_{} (used to train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
