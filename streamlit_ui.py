@@ -224,6 +224,8 @@ with title_container.beta_expander('Introduction', expanded=True):
 with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
 	st.write(genre_stereotypes)
 title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre! View the results below to see if you and the ML model guessed the same.')
+title_container.write('')
+title_container.write('')
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
 filename_options = ['{}_{} (used to train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
