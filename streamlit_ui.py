@@ -107,8 +107,8 @@ def plot_meta_data_graphs(plot_data_dict):
 	st.subheader('Full Audio Clip: Step-by-Step Transformation')
 	col1, col2, col3 = st.beta_columns(3)
 	with col1:
-		st.pyplot(fig1, use_container_width=True)
-		st.pyplot(fig2, use_container_width=True)
+		st.pyplot(fig1)
+		st.pyplot(fig2)
 	with col2:
 		st.write('')
 		st.write('')
@@ -116,10 +116,10 @@ def plot_meta_data_graphs(plot_data_dict):
 		st.write('')
 		st.write('')
 		st.write('')
-		st.pyplot(fig3, use_container_width=True)
+		st.pyplot(fig3)
 	with col3:
-		st.pyplot(fig4, use_container_width=True)
-		st.pyplot(fig5, use_container_width=True)
+		st.pyplot(fig4)
+		st.pyplot(fig5)
 	st.write('')
 
 
@@ -159,8 +159,8 @@ def plot_single_note_graphs(plot_data_dict):
 	st.subheader('Zoomed View on First Note(s): Step-by-Step Transformation')
 	col1, col2, col3 = st.beta_columns(3)
 	with col1:
-		st.pyplot(fig1, use_container_width=True)
-		st.pyplot(fig2, use_container_width=True)
+		st.pyplot(fig1)
+		st.pyplot(fig2)
 	with col2:
 		st.write('')
 		st.write('')
@@ -168,10 +168,10 @@ def plot_single_note_graphs(plot_data_dict):
 		st.write('')
 		st.write('')
 		st.write('')
-		st.pyplot(fig3, use_container_width=True)
+		st.pyplot(fig3)
 	with col3:
-		st.pyplot(fig4, use_container_width=True)
-		st.pyplot(fig5, use_container_width=True)
+		st.pyplot(fig4)
+		st.pyplot(fig5)
 	st.write('')
 
 
