@@ -234,26 +234,30 @@ wav_filename = st.sidebar.selectbox('Choose a .wav file:', filename_options)
 if wav_filename == '':
 	st.stop()
 wav_filename = wav_filename.replace("'", "").replace(' (used to train/test)', '')
-wav_filename = wav_filename.replace('.wav', '') + '.WAV'
+wav_filename = wav_filename
 
 # display audio
-audio_file = open('groove_samples/' + wav_filename, 'rb')
+audio_file = open('groove_samples/' + wav_filename + '.WAV', 'rb')
 audio_bytes = audio_file.read()
 st.sidebar.audio(audio_bytes, format='audio/ogg')
 
-rows = []
-row, plot_data_dict = create_meta_data.create_meta_data(wav_filename)
-rows.append(row)
-
-columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
-           'note_count_med', 'note_hz_med', 'avg_space_med',
-           'note_count_low', 'note_hz_low', 'avg_space_low',
-           'high_med_note_ratio', 'high_med_space_ratio',
-           'high_low_note_ratio', 'high_low_space_ratio',
-           'med_low_note_ratio', 'med_low_space_ratio', 'med_vol_scale',
-           'genre']
-single_file_data_df = pd.DataFrame(rows, columns=columns)
+# load previously stored results and data
+with open('allbeats_data_dict.pkl', 'rb') as handle:
+    allbeats_data_dict = pickle.load(handle)
+plot_data_dict = allbeats_data_dict[wav_filename]['plot_data_dict']
+correct_genre = allbeats_data_dict[wav_filename]['correct_genre']
+predicted_genre = allbeats_data_dict[wav_filename]['predicted_genre']
+single_file_data_df = allbeats_data_dict[wav_filename]['single_file_data_df']
 single_file_data_df['genre'] = wav_filename
+
+# showing results
+with title_container.beta_expander('View the Results!'):
+	st.subheader('Audio File: `{}`'.format(wav_filename))
+	st.subheader('Correct Genre: `{}`'.format(correct_genre.capitalize()))
+	st.subheader('The Model Chose: `{}`'.format(predicted_genre.capitalize()))
+title_container.write('')
+title_container.write('')
+title_container.write('')
 
 
 st.header('Data Transformation')
@@ -332,23 +336,3 @@ for graph_title, graph_columns in bargraph_values.items():
 								   xanchor='right', x=1)
 					   )
 	st.plotly_chart(fig, use_container_width=True)
-
-
-features =  [
-           'note_count_high', 'avg_space_high',
-           'note_count_med', 'avg_space_med',
-           'note_count_low', 'avg_space_low',
-           'high_med_note_ratio', 'high_med_space_ratio',
-           'high_low_note_ratio', 'high_low_space_ratio',
-           'med_low_note_ratio', 'med_low_space_ratio',
-           'med_vol_scale']
-# model expects columns in abc order
-features.sort()
-actual = single_file_data_df['genre'][0]
-prediction = classifier.predict(single_file_data_df[features])[0]
-with title_container.beta_expander('View the Results!'):
-	st.subheader('Audio File: `{}`'.format(wav_filename))
-	st.subheader('The Model Chose: `{}`'.format(prediction.capitalize()))
-title_container.write('')
-title_container.write('')
-title_container.write('')

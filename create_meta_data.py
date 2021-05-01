@@ -50,16 +50,15 @@ def create_meta_data(wav_filename):
                  high_med_note_ratio, high_med_space_ratio,
                  high_low_note_ratio, high_low_space_ratio,
                  med_low_note_ratio, med_low_space_ratio,
-                 med_vol_scale, genre, plot_data_dict, wav_filename]
-
-    return row
+                 med_vol_scale, genre]
+    return row, plot_data_dict, wav_filename
 
 
 
 
 
 def read_and_format_wav_file(wav_filename):
-    wav_filename = wav_filename.replace('.wav', '').replace('.WAV', '') + '.WAV'
+    wav_filename = wav_filename + '.WAV'
     genre = re.split('_', wav_filename)[0]
 
     rate, data = wavfile.read('groove_samples/' + wav_filename)

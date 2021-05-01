@@ -64,21 +64,23 @@ genres = [
 num_per_genre = 30
 
 #create meta data df for all files
-rows = []
-for genre in genres:
-    for num in range(1,num_per_genre+1):
-        wav_filename = genre + '_' + str(num) + '.wav'
-        row = create_meta_data.create_meta_data(wav_filename)
-        rows.append(rows)
-
 columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'note_count_med', 'note_hz_med', 'avg_space_med',
            'note_count_low', 'note_hz_low', 'avg_space_low',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
-           'med_vol_scale', 'plot_data_dict', 'wav_filename'
-            'genre']
+           'med_vol_scale', 'genre']
+allbeats_data_dict = {}
+rows = []
+for genre in genres:
+    for num in range(1,num_per_genre+1):
+        wav_filename = genre + '_' + str(num)
+        row, plot_data_dict, wav_filename = create_meta_data.create_meta_data(wav_filename)
+        allbeats_data_dict[wav_filename] = {'single_file_data_df': pd.DataFrame([row], columns=columns),
+                                           'plot_data_dict': plot_data_dict,
+                                           'correct_genre': genre}
+        rows.append(row)
 
 meta_data_df = pd.DataFrame(rows, columns=columns)
 columns.remove('genre')
@@ -87,7 +89,6 @@ meta_data_df = nullify_outliers(meta_data_df, columns)
 meta_data_df.to_pickle('meta_data_df.pkl')
 meta_data_df = pd.read_pickle('meta_data_df.pkl')
 
-code.interact(local=locals())
 
 columns = [
            'note_count_high', 'avg_space_high',
@@ -108,4 +109,41 @@ print(average_accuracy)
 pickle.dump(best_classifier, open('groove_classifier.pkl.dat', 'wb'))
 
 
-#TODO: calc avg volume for each set of high,med,low vol notes and put med on scale 1-3
+# create data for drumbeat_1-8 files
+columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
+           'note_count_med', 'note_hz_med', 'avg_space_med',
+           'note_count_low', 'note_hz_low', 'avg_space_low',
+           'high_med_note_ratio', 'high_med_space_ratio',
+           'high_low_note_ratio', 'high_low_space_ratio',
+           'med_low_note_ratio', 'med_low_space_ratio',
+           'med_vol_scale', 'genre']
+for i in range(8):
+    correct_genre_list = ['rock', 'latin', 'rock', 'sixeight', 'jazz', 'jazz', 'latin', 'sixeight']
+    wav_filename = 'drumbeat_{}'.format(i+1)
+    row, plot_data_dict, wav_filename = create_meta_data.create_meta_data(wav_filename)
+    allbeats_data_dict[wav_filename] = {'single_file_data_df': pd.DataFrame([row], columns=columns),
+                                       'plot_data_dict': plot_data_dict,
+                                       'correct_genre': correct_genre_list[i]}
+
+# run the model on all files
+features =  [
+           'note_count_high', 'avg_space_high',
+           'note_count_med', 'avg_space_med',
+           'note_count_low', 'avg_space_low',
+           'high_med_note_ratio', 'high_med_space_ratio',
+           'high_low_note_ratio', 'high_low_space_ratio',
+           'med_low_note_ratio', 'med_low_space_ratio',
+           'med_vol_scale']
+# model expects columns in abc order
+features.sort()
+for wav_filename, beat_info in allbeats_data_dict.items():
+    single_file_data_df = beat_info['single_file_data_df']
+    prediction = best_classifier.predict(single_file_data_df[features])[0]
+    allbeats_data_dict[wav_filename]['predicted_genre'] = prediction
+
+
+
+
+# pickling allbeats_data_dict
+with open('allbeats_data_dict.pkl', 'wb') as handle:
+    pickle.dump(allbeats_data_dict, handle)
