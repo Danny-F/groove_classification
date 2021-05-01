@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score
 import xgboost as xgb
 import pickle
 import create_meta_data
+import code
 
 
 
@@ -67,7 +68,8 @@ rows = []
 for genre in genres:
     for num in range(1,num_per_genre+1):
         wav_filename = genre + '_' + str(num) + '.wav'
-        rows.append(create_meta_data.create_meta_data(wav_filename))
+        row = create_meta_data.create_meta_data(wav_filename)
+        rows.append(rows)
 
 columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'note_count_med', 'note_hz_med', 'avg_space_med',
@@ -75,7 +77,7 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'high_med_note_ratio', 'high_med_space_ratio',
            'high_low_note_ratio', 'high_low_space_ratio',
            'med_low_note_ratio', 'med_low_space_ratio',
-           'med_vol_scale',
+           'med_vol_scale', 'plot_data_dict', 'wav_filename'
             'genre']
 
 meta_data_df = pd.DataFrame(rows, columns=columns)
@@ -84,6 +86,8 @@ meta_data_df = nullify_outliers(meta_data_df, columns)
 
 meta_data_df.to_pickle('meta_data_df.pkl')
 meta_data_df = pd.read_pickle('meta_data_df.pkl')
+
+code.interact(local=locals())
 
 columns = [
            'note_count_high', 'avg_space_high',

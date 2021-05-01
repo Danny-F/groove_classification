@@ -41,6 +41,8 @@ def create_meta_data(wav_filename):
 
     med_vol_scale = (med_vol_avg - low_vol_avg) / (high_vol_avg - low_vol_avg)
 
+    plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
+
     #add all meta data for single groove to a row
     row = [note_count_high, note_hz_high, avg_space_high,
                  note_count_med, note_hz_med, avg_space_med,
@@ -48,9 +50,9 @@ def create_meta_data(wav_filename):
                  high_med_note_ratio, high_med_space_ratio,
                  high_low_note_ratio, high_low_space_ratio,
                  med_low_note_ratio, med_low_space_ratio,
-                 med_vol_scale, genre]
-    plot_data_dict = {'plot12':plot12_data_df, 'plot3':plot3_data_df, 'plot4':plot4_data_df, 'plot5':plot5_data_df}
-    return row, plot_data_dict
+                 med_vol_scale, genre, plot_data_dict, wav_filename]
+
+    return row
 
 
 
