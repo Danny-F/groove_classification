@@ -78,7 +78,6 @@ for genre in genres:
         wav_filename = genre + '_' + str(num)
         row, plot_data_dict, wav_filename = create_meta_data.create_meta_data(wav_filename)
         allbeats_data_dict[wav_filename] = {'single_file_data_df': pd.DataFrame([row], columns=columns),
-                                           'plot_data_dict': plot_data_dict,
                                            'correct_genre': genre}
         rows.append(row)
 
@@ -122,8 +121,7 @@ for i in range(8):
     wav_filename = 'drumbeat_{}'.format(i+1)
     row, plot_data_dict, wav_filename = create_meta_data.create_meta_data(wav_filename)
     allbeats_data_dict[wav_filename] = {'single_file_data_df': pd.DataFrame([row], columns=columns),
-                                       'plot_data_dict': plot_data_dict,
-                                       'correct_genre': correct_genre_list[i]}
+                                        'correct_genre': correct_genre_list[i]}
 
 # run the model on all files
 features =  [

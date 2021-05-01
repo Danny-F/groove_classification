@@ -244,11 +244,13 @@ st.sidebar.audio(audio_bytes, format='audio/ogg')
 # load previously stored results and data
 with open('allbeats_data_dict.pkl', 'rb') as handle:
     allbeats_data_dict = pickle.load(handle)
-plot_data_dict = allbeats_data_dict[wav_filename]['plot_data_dict']
 correct_genre = allbeats_data_dict[wav_filename]['correct_genre']
 predicted_genre = allbeats_data_dict[wav_filename]['predicted_genre']
 single_file_data_df = allbeats_data_dict[wav_filename]['single_file_data_df']
 single_file_data_df['genre'] = wav_filename
+
+# running create_meta_data again to get plot_data_dict
+_, plot_data_dict, __ = create_meta_data.create_meta_data(wav_filename)
 
 # showing results
 with title_container.beta_expander('View the Results!'):
