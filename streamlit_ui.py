@@ -224,8 +224,6 @@ with title_container.beta_expander('Introduction', expanded=True):
 with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
 	st.write(genre_stereotypes)
 title_container.subheader('Choose a file on the left side of the screen, then listen to the groove and guess the genre! View the results below to see if you and the ML model guessed the same.')
-title_container.write('')
-title_container.write('')
 # choosing file to investigate
 genres = ['rock', 'sixeight', 'latin', 'jazz']
 filename_options = ['{}_{} (used to train/test)'.format(genre, num+1) for genre in genres for num in range(30)]
@@ -259,7 +257,6 @@ with title_container.beta_expander('View the Results!'):
 	st.subheader('The Model Chose: `{}`'.format(predicted_genre.capitalize()))
 title_container.write('')
 title_container.write('')
-title_container.write('')
 
 
 st.header('Data Transformation')
@@ -268,7 +265,6 @@ plot_meta_data_graphs(plot_data_dict)
 plot_single_note_graphs(plot_data_dict)
 with st.beta_expander('Data Transformation: Overview'):
 	st.write(high_level_data_transformation_explanation)
-st.write('')
 with st.beta_expander('Data Transformation: Step-By-Step'):
 	st.write(step_by_step_data_transformation_explanation)
 st.write('')
