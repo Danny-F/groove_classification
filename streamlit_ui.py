@@ -255,7 +255,7 @@ with title_container.beta_expander('View the Results!'):
 	st.subheader('Audio File: `{}`'.format(wav_filename))
 	st.subheader('Correct Genre: `{}`'.format(correct_genre.capitalize()))
 	st.subheader('The Model Chose: `{}`'.format(predicted_genre.capitalize()))
-# title_container.write('')
+title_container.write('')
 
 
 st.header('Data Transformation')
@@ -266,7 +266,6 @@ with st.beta_expander('Data Transformation: Overview'):
 	st.write(high_level_data_transformation_explanation)
 with st.beta_expander('Data Transformation: Step-By-Step'):
 	st.write(step_by_step_data_transformation_explanation)
-st.write('')
 st.write('')
 st.write('')
 
