@@ -182,7 +182,7 @@ title_container.write('')
 table_of_contents = """**Table Of Contents**
 - Introduction
 - Different Genre "Stereotypes"
-- Viewing the Results
+- View the Results
 - Data Transformation
     - Overview
     - Step-By-Step Explanation
