@@ -57,7 +57,7 @@ def nullify_outliers(df, columns):
 
 genres = [
     'rock',
-    'sixeight',
+    'shuffle',
     'latin',
     'jazz'
           ]
@@ -117,7 +117,7 @@ columns = ['note_count_high', 'note_hz_high', 'avg_space_high',
            'med_low_note_ratio', 'med_low_space_ratio',
            'med_vol_scale', 'genre']
 for i in range(8):
-    correct_genre_list = ['rock', 'latin', 'rock', 'sixeight', 'jazz', 'jazz', 'latin', 'sixeight']
+    correct_genre_list = ['rock', 'latin', 'rock', 'shuffle', 'jazz', 'jazz', 'latin', 'shuffle']
     wav_filename = 'drumbeat_{}'.format(i+1)
     row, plot_data_dict, wav_filename = create_meta_data.create_meta_data(wav_filename)
     allbeats_data_dict[wav_filename] = {'single_file_data_df': pd.DataFrame([row], columns=columns),
