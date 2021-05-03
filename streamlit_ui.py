@@ -315,6 +315,8 @@ expander = st.beta_expander('Data Transformation: Graphs')
 plot_meta_data_graphs(plot_data_dict, expander)
 plot_single_note_graphs(plot_data_dict, expander)
 st.write('')
+# removing df from memory
+plot_data_dict = {}
 
 all_mdata = pd.read_pickle('meta_data_df.pkl')
 classifier = load_in_model('groove_classifier.pkl.dat')
