@@ -69,7 +69,7 @@ def plot_title_graphs(plot_data_dict):
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green', label='Bass Drum')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red', label='Snare Drum / Toms')
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue', label='Hi-Hat / Soft Snare Hits')
-	ax.legend(loc='bottom left', bbox_to_anchor=(.58, 1), fontsize='medium')
+	ax.legend(loc='lower left', bbox_to_anchor=(.58, 1), fontsize='medium')
 	st.subheader('Before/After Audio File Transformation')
 	col1, col2 = st.beta_columns(2)
 	with col1:
@@ -119,7 +119,7 @@ def plot_meta_data_graphs(plot_data_dict, expander):
 		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green', label='Bass Drum')
 		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red', label='Snare Drum / Toms')
 		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue', label='Hi-Hat / Soft Snare Hits')
-		ax.legend(loc='bottom left', bbox_to_anchor=(.58, 1), fontsize='medium')
+		ax.legend(loc='lower left', bbox_to_anchor=(.58, 1), fontsize='medium')
 		ax.set_xlabel('kHz')
 		ax.set_ylabel('Volume')
 		st.subheader('Full Audio Clip: Step-by-Step Transformation')
