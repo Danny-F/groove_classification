@@ -192,7 +192,7 @@ def plot_single_note_graphs(plot_data_dict, expander):
 		ax.set_ylim([0,highest_vol])
 		ax.set_xlabel('kHz')
 		ax.set_ylabel('Volume')
-		ax.legend(loc='bottom left', bbox_to_anchor=(1.03, 1.22), fontsize='medium')
+		ax.legend(loc='lower left', bbox_to_anchor=(1.03, 1.22), fontsize='medium')
 		st.subheader('Zoomed View on First Note(s): Step-by-Step Transformation')
 		col1, col2 = st.beta_columns(2)
 		with col1:
