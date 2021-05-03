@@ -66,12 +66,14 @@ def plot_title_graphs(plot_data_dict):
 	ax.set_xlabel('kHz')
 	ax.set_ylabel('Volume')
 	# ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
-	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
-	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
-	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green', label='Bass Drum')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red', label='Snare Drum / Toms')
+	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue', label='Hi-Hat / Soft Snare Hits')
+	ax.legend(loc='bottom left', bbox_to_anchor=(.58, 1), fontsize='medium')
 	st.subheader('Before/After Audio File Transformation')
 	col1, col2 = st.beta_columns(2)
 	with col1:
+		st.write('')
 		st.pyplot(fig1, use_container_width=True)
 	with col2:
 		st.pyplot(fig5, use_container_width=True)
@@ -114,9 +116,10 @@ def plot_meta_data_graphs(plot_data_dict, expander):
 		fig5.suptitle('Step 4', fontsize=20)
 		ax.plot(plot5_data_df['lr_abs_mean_mean'],ls='')
 		# ax.bar(data_df.loc[data_df['cluster_label']==0].index, data_df.loc[data_df['cluster_label']==0, 'lr_abs_mean_mean'], color='blue')
-		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
-		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
-		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==2, 'lr_abs_mean_mean'],ls='', marker='.', color='green', label='Bass Drum')
+		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==1, 'lr_abs_mean_mean'],ls='', marker='.', color='red', label='Snare Drum / Toms')
+		ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue', label='Hi-Hat / Soft Snare Hits')
+		ax.legend(loc='bottom left', bbox_to_anchor=(.58, 1), fontsize='medium')
 		ax.set_xlabel('kHz')
 		ax.set_ylabel('Volume')
 		st.subheader('Full Audio Clip: Step-by-Step Transformation')
@@ -180,15 +183,16 @@ def plot_single_note_graphs(plot_data_dict, expander):
 		plot5_df_low = plot5_df.copy()
 		plot5_df_med = plot5_df.copy()
 		plot5_df_high = plot5_df.copy()
-		plot5_df_low.loc[plot5_df_low['cluster_label']!=0, 'lr_abs_mean_mean'] = 0
-		plot5_df_med.loc[plot5_df_med['cluster_label']!=1, 'lr_abs_mean_mean'] = 0
-		plot5_df_high.loc[plot5_df_high['cluster_label']!=2, 'lr_abs_mean_mean'] = 0
-		ax.plot(plot5_df_low.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', color='blue')
-		ax.plot(plot5_df_med.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', color='red')
-		ax.plot(plot5_df_high.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', color='green')
+		plot5_df_low.loc[plot5_df_low['cluster_label']!=0, 'lr_abs_mean_mean'] = -2000
+		plot5_df_med.loc[plot5_df_med['cluster_label']!=1, 'lr_abs_mean_mean'] = -2000
+		plot5_df_high.loc[plot5_df_high['cluster_label']!=2, 'lr_abs_mean_mean'] = -2000
+		ax.plot(plot5_df_high.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', ms=10, color='green', label='Bass Drum')
+		ax.plot(plot5_df_med.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', ms=10, color='red', label='Snare Drum / Toms')
+		ax.plot(plot5_df_low.loc[first_note_in_view-1:last_note_in_view+1, 'lr_abs_mean_mean'],ls='', marker='.', ms=10, color='blue', label='Hi-Hat / Soft Snare Hits')
 		ax.set_ylim([0,highest_vol])
 		ax.set_xlabel('kHz')
 		ax.set_ylabel('Volume')
+		ax.legend(loc='bottom left', bbox_to_anchor=(1.03, 1.22), fontsize='medium')
 		st.subheader('Zoomed View on First Note(s): Step-by-Step Transformation')
 		col1, col2 = st.beta_columns(2)
 		with col1:
