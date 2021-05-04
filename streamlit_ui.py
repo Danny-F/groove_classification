@@ -284,6 +284,7 @@ title_container.write('')
 title_container.write('')
 table_of_contents = """**Table Of Contents**
 - Introduction
+- Drumset Key
 - Different Genre "Stereotypes"
 - View the Results
 - Data Transformation
