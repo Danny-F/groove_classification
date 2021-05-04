@@ -47,6 +47,77 @@ def create_meta_data_for_all_files(filename_options):
 	meta_data_df = pd.DataFrame(rows, columns=columns)
 	return meta_data_df
 
+def show_genre_stereotypes():
+	intro_blurb = """The general stereotypes/motifs you can expect in each genre are as follows:"""
+	rock_stereotypes = """- *Rock:* Big strong hits on the snare and bass drum, with consistent and generally large amounts of space between each note. The hi-hat fills in the space between the drum hits."""
+	shuffle_stereotypes = """- *Shuffle* The snare drum contains loud hits with a notable amount of "soft" hits inbetween. More bass drum hits compared to rock. Lots of hi-hat notes that vary from soft to loud."""
+	latin_stereotypes = """- *Latin:* The bass drum follows an ever-constant "heart beat" pattern. A "cha-cha" pattern is played around the snare drum and toms. Fast and consistent notes are played on the cymbals. The hi-hat sports a constant "chick" (think boom-chick-boom-chick) pattern."""
+	jazz_stereotypes = """- *Jazz:* There are little to no bass drum hits. Snare drum hits seem to be played at random and are meant as a form of embellishment, varying from soft to loud. A constant shuffle-like pattern is played on the cymbal with the hi-hat being played on the backbeat.
+	 (where you would normally expect to hear a snare drum in any rock beat)."""
+	# display text and example audio files of each genre
+	st.write(intro_blurb)
+	# rock
+	st.write(rock_stereotypes)
+	audio_file = open('drumset_legend/rock_example.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	# st.write('Rock Example')
+	st.audio(audio_bytes, format='audio/ogg')
+	# shuffle
+	st.write(shuffle_stereotypes)
+	audio_file = open('drumset_legend/shuffle_example.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	# st.write('Shuffle Example')
+	st.audio(audio_bytes, format='audio/ogg')
+	# latin
+	st.write(latin_stereotypes)
+	audio_file = open('drumset_legend/latin_example.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	# st.write('Latin Example')
+	st.audio(audio_bytes, format='audio/ogg')
+	# jazz
+	st.write(jazz_stereotypes)
+	audio_file = open('drumset_legend/jazz_example.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	# st.write('Jazz Example')
+	st.audio(audio_bytes, format='audio/ogg')
+
+
+
+def show_drumset_legend():
+	st.image('https://s3.amazonaws.com/drumeoblog/beat/wp-content/uploads/2019/11/22114343/blog-graphics-labeled-drum-kit.jpg')
+	# snare
+	audio_file = open('drumset_legend/snare.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Snare Drum')
+	st.audio(audio_bytes, format='audio/ogg')
+	# toms
+	audio_file = open('drumset_legend/toms.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Toms')
+	st.audio(audio_bytes, format='audio/ogg')
+	# bass
+	audio_file = open('drumset_legend/bass.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Bass Drum')
+	st.audio(audio_bytes, format='audio/ogg')
+	# hihat
+	audio_file = open('drumset_legend/hihat.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Hi-Hat')
+	st.audio(audio_bytes, format='audio/ogg')
+	# ride
+	audio_file = open('drumset_legend/ride.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Ride Cymbal')
+	st.audio(audio_bytes, format='audio/ogg')
+	# crash
+	audio_file = open('drumset_legend/crashes.WAV', 'rb')
+	audio_bytes = audio_file.read()
+	st.write('Crash Cymbals')
+	st.audio(audio_bytes, format='audio/ogg')
+
+
+
 def plot_title_graphs(plot_data_dict):
 	plot12_data_df = plot_data_dict['plot12']
 	plot3_data_df = plot_data_dict['plot3']
@@ -233,12 +304,6 @@ if you were to turn on a rap song, you would expect to hear fast and rhythmic si
   My electronic drumset records at 44.1 khz which translates into 44.1k rows of data per second of audio (396.9k-661.5k rows per audio file). After transforming each audio file into meta data,
  an XGBoosted classification model was trained to be able to correctly identify the genre of each drum beat at a 90% accuracy rating."""
 
-genre_stereotypes = """The general stereotypes/motifs you can expect in each genre are as follows:
-- *Rock:* Big strong hits on the snare and bass drum, with consistent and generally large amounts of space between each note. The hi-hat fills in the space between the drum hits.
-- *Shuffle/Funk:* The snare drum contains loud hits with a notable amount of "soft" hits inbetween. More bass drum hits compared to rock. Lots of hi-hat notes that vary from soft to loud.
-- *Latin:* The bass drum follows an ever-constant "heart beat" pattern. A "cha-cha" pattern is played around the snare drum and toms. Fast and consistent notes are played on the cymbals. The hi-hat sports a constant "chick" (think boom-chick-boom-chick) pattern.
-- *Jazz:* There are little to no bass drum hits. Snare drum hits seem to be played at random and are meant as a form of embellishment, varying from soft to loud. A constant shuffle-like pattern is played on the cymbal with the hi-hat being played on the backbeat
- (where you would normally expect to hear a snare drum in any rock beat)."""
 
 high_level_data_transformation_explanation = """The main goal of transforming the audio file data is to get it in a state to be able to capture the following information:
 - 1) Pick out the individual notes that were played during the timeseries soundwave data.
@@ -262,11 +327,10 @@ This also had a positive side effect of reducing the total number of rows in eac
 "all of the loud notes are consistently spaced and less frequent (rock)" or "there are a lot of medium and low volume notes (shuffle/funk)". """
 with title_container.beta_expander('Introduction', expanded=True):
 	st.write(intro_blurb)
-with title_container.beta_expander('Genre "Stereotypes"', expanded=True):
-	st.write(genre_stereotypes)
-	st.write('')
-	st.write('Drumset Legend:')
-	st.image('https://s3.amazonaws.com/drumeoblog/beat/wp-content/uploads/2019/11/22114343/blog-graphics-labeled-drum-kit.jpg')
+with title_container.beta_expander('Drumset Key: Get familiar with each part of the drumset.'):
+	show_drumset_legend()
+with title_container.beta_expander('Genre "Stereotypes"'):
+	show_genre_stereotypes()
 title_container.write('Choose a file on the left side of the screen, then listen to the groove and guess the genre! View the results below to see if you and the ML model guessed the same.')
 
 
