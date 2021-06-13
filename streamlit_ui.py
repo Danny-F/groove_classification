@@ -52,7 +52,7 @@ def show_genre_stereotypes():
 	rock_stereotypes = """- *Rock:* Big strong hits on the snare and bass drum, with consistent and generally large amounts of space between each note. The hi-hat fills in the space between the drum hits."""
 	shuffle_stereotypes = """- *Shuffle* The snare drum contains loud hits with a notable amount of "soft" hits inbetween. More bass drum hits compared to rock. Lots of hi-hat notes that vary from soft to loud."""
 	latin_stereotypes = """- *Latin:* The bass drum follows an ever-constant "heart beat" pattern. A "cha-cha" pattern is played around the snare drum and toms. Fast and consistent notes are played on the cymbals. The hi-hat sports a constant "chick" (think boom-chick-boom-chick) pattern."""
-	jazz_stereotypes = """- *Jazz:* There are little to no bass drum hits. Snare drum hits seem to be played at random and are meant as a form of embellishment, varying from soft to loud. A constant shuffle-like pattern is played on the cymbal with the hi-hat being played on the backbeat.
+	jazz_stereotypes = """- *Jazz:* Bass drum hits are more sparse and less consistent compared to other genres. Snare drum hits seem to be played at random and are meant as a form of embellishment, varying from soft to loud. A constant shuffle-like pattern is played on the cymbal with the hi-hat being played on the backbeat.
 	 (where you would normally expect to hear a snare drum in any rock beat)."""
 	# display text and example audio files of each genre
 	st.write(intro_blurb)
@@ -307,24 +307,22 @@ if you were to turn on a rap song, you would expect to hear fast and rhythmic si
 
 
 high_level_data_transformation_explanation = """The main goal of transforming the audio file data is to get it in a state to be able to capture the following information:
-- 1) Pick out the individual notes that were played during the timeseries soundwave data.
-- 2) Calculate the volume of each note and categorize them into 3 buckets: High, Medium, and Low Volume.
-- 3) Calculate the number of notes within each Volume Category (High/Medium/Low) and the relationship between these categories.
-
-Being able to extract these main components of meta data from each audio file, gave the model what it needed to be able to detect "stereotypes" within each audio file and ultimately classify the drum beat to its appropriate genre. Examples of these "stereotypes" per genre are listed above.
-
+ - Pick out the individual notes that were played during the timeseries soundwave data.
+ - Calculate the volume of each note and categorize them into 3 buckets: High, Medium, and Low Volume.
+ - Calculate the number of notes within each Volume Category (High/Medium/Low) and the relationship between these categories.
+\nBeing able to extract these main components of meta data from each audio file, gave the model what it needed to be able to detect "stereotypes" within each audio file and ultimately classify the drum beat to its appropriate genre. Examples of these "stereotypes" per genre are listed above.
 However, two main factors made transforming this data very tricky.
-- First, since the data is in fact audio data, that means each file containts a single table of continuous timeseries data made up of sounds waves. Sound waves are difficult to sift through in data form
+ - First, since the data is in fact audio data, that means each file containts a single table of continuous timeseries data made up of sounds waves. Sound waves are difficult to sift through in data form
  because they oscillate around 0. Initally, I thought I could use a volume value of 0 as the way to know when a note ends, but that was not the case. Because sound waves are constantly oscillating, there are 0s scattered all over the timeseries data; between and *within* the sound of a drum hit.
  - Secondly,  there is *a lot* of data per audio file. On average, each file is about a half a million rows of data. Because of this, I had to get creative in the methods I used to transform the data to avoid hours of processing for each audio file (and to avoid crashing my computer)."""
 
-step_by_step_data_transformation_explanation = """Below is a step-by-step breakdown of the data transformation process. Each step coincides with the graphs shown above.
-- 1) The abosulte value was taken to transform all volume data into positive values.
-- 2) Each 100 rows of data was grouped up and the average volume was calculated. This was done to get rid of small pockets of 0s that exist within each note as the sound wave oscillated back and forth across 0.
+step_by_step_data_transformation_explanation = """Below is a step-by-step breakdown of the data transformation process. Each step coincides with the graphs shown below in the Data Transformation: Graphs section.
+\n1) The abosulte value was taken to transform all volume data into positive values.
+\n2) Each 100 rows of data was grouped up and the average volume was calculated. This was done to get rid of small pockets of 0s that exist within each note as the sound wave oscillated back and forth across 0.
 This also had a positive side effect of reducing the total number of rows in each data set from ~500k to ~5k.
-- 3) The average volume of each note was then calculated. Because of the calculations done in Step 2, individual notes could now be identified in the timeseries data by using the remaining groups of 0s as the ending point of notes
+\n3) The average volume of each note was then calculated. Because of the calculations done in Step 2, individual notes could now be identified in the timeseries data by using the remaining groups of 0s as the ending point of notes
 (ie. volume at 0 == no sound).
-- 4) Lastly, each note was classified as either a high-volume note, a medium-volume note, or a low-volume note via KMeans Clustering. By grouping the notes into these volume categories, it allowed for the creation of meta data like
+\n4) Lastly, each note was classified as either a high-volume note, a medium-volume note, or a low-volume note via KMeans Clustering. By grouping the notes into these volume categories, it allowed for the creation of meta data like
 "all of the loud notes are consistently spaced and less frequent (rock)" or "there are a lot of medium and low volume notes (shuffle/funk)". """
 with title_container.beta_expander('Introduction', expanded=True):
 	st.write(intro_blurb)
@@ -332,7 +330,7 @@ with title_container.beta_expander('Drumset Key: Get familiar with each part of 
 	show_drumset_legend()
 with title_container.beta_expander('Genre "Stereotypes"'):
 	show_genre_stereotypes()
-title_container.write('Choose a file on the left side of the screen, then listen to the groove and guess the genre! View the results below to see if you and the ML model guessed the same.')
+title_container.write('Choose between the different audio files in the drop-down on the left side of the screen. See the results of the model below.')
 
 
 # choosing file to investigate
@@ -363,10 +361,17 @@ single_file_data_df['genre'] = wav_filename
 _, plot_data_dict, __ = create_meta_data.create_meta_data(wav_filename)
 
 # showing results
-with title_container.beta_expander('View the Results!'):
-	st.subheader('Audio File: `{}`'.format(wav_filename))
-	st.subheader('Correct Genre: `{}`'.format(correct_genre.capitalize()))
-	st.subheader('The Model Chose: `{}`'.format(predicted_genre.capitalize()))
+# with title_container.beta_expander('View the Results!'):
+col1, col2, col3 = title_container.beta_columns(3)
+# col1.subheader('Audio File: `{}`'.format(wav_filename))
+col1.subheader('Audio File')
+col1.subheader('`{}`'.format(wav_filename))
+# col2.subheader('Correct Genre: `{}`'.format(correct_genre.capitalize()))
+col2.subheader('Correct Genre')
+col2.subheader('`{}`'.format(correct_genre.capitalize()))
+# col3.subheader('The Model Chose: `{}`'.format(predicted_genre.capitalize()))
+col3.subheader("Model Result")
+col3.subheader('`{}`'.format(predicted_genre.capitalize()))
 title_container.write('')
 
 # data transformation
