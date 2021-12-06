@@ -142,7 +142,7 @@ def plot_title_graphs(plot_data_dict):
 	ax.plot(plot5_data_df.loc[plot5_data_df['cluster_label']==0, 'lr_abs_mean_mean'],ls='', marker='.', color='blue', label='Hi-Hat / Soft Snare Hits')
 	ax.legend(loc='lower left', bbox_to_anchor=(.58, 1), fontsize='medium')
 	st.subheader('Before/After Audio File Transformation')
-	col1, col2 = st.beta_columns(2)
+	col1, col2 = st.columns(2)
 	with col1:
 		st.write('')
 		st.pyplot(fig1, use_container_width=True)
@@ -194,7 +194,7 @@ def plot_meta_data_graphs(plot_data_dict, expander):
 		ax.set_xlabel('kHz')
 		ax.set_ylabel('Volume')
 		st.subheader('Full Audio Clip: Step-by-Step Transformation')
-		col1, col2 = st.beta_columns(2)
+		col1, col2 = st.columns(2)
 		with col1:
 			st.pyplot(fig1)
 			st.pyplot(fig3)
@@ -265,7 +265,7 @@ def plot_single_note_graphs(plot_data_dict, expander):
 		ax.set_ylabel('Volume')
 		ax.legend(loc='lower left', bbox_to_anchor=(.58, 1), fontsize='medium')
 		st.subheader('Zoomed View on First Note(s): Step-by-Step Transformation')
-		col1, col2 = st.beta_columns(2)
+		col1, col2 = st.columns(2)
 		with col1:
 			st.pyplot(fig1)
 			st.pyplot(fig3)
@@ -278,7 +278,7 @@ def plot_single_note_graphs(plot_data_dict, expander):
 
 ##################### execution ###########################
 
-title_container = st.beta_container()
+title_container = st.container()
 title_container.title('Classifying the Genre of a Drum Beat With Machine Learning')
 title_container.write('')
 title_container.write('')
@@ -324,11 +324,11 @@ This also had a positive side effect of reducing the total number of rows in eac
 (ie. volume at 0 == no sound).
 \n4) Lastly, each note was classified as either a high-volume note, a medium-volume note, or a low-volume note via KMeans Clustering. By grouping the notes into these volume categories, it allowed for the creation of meta data like
 "all of the loud notes are consistently spaced and less frequent (rock)" or "there are a lot of medium and low volume notes (shuffle/funk)". """
-with title_container.beta_expander('Introduction', expanded=True):
+with title_container.expander('Introduction', expanded=True):
 	st.write(intro_blurb)
-with title_container.beta_expander('Drumset Key: Get familiar with each part of the drumset.'):
+with title_container.expander('Drumset Key: Get familiar with each part of the drumset.'):
 	show_drumset_legend()
-with title_container.beta_expander('Genre "Stereotypes"'):
+with title_container.expander('Genre "Stereotypes"'):
 	show_genre_stereotypes()
 title_container.write('Choose between the different audio files in the drop-down on the left side of the screen. See the results of the model below.')
 
@@ -361,8 +361,8 @@ single_file_data_df['genre'] = wav_filename
 _, plot_data_dict, __ = create_meta_data.create_meta_data(wav_filename)
 
 # showing results
-# with title_container.beta_expander('View the Results!'):
-col1, col2, col3 = title_container.beta_columns(3)
+# with title_container.expander('View the Results!'):
+col1, col2, col3 = title_container.columns(3)
 # col1.subheader('Audio File: `{}`'.format(wav_filename))
 col1.subheader('Audio File')
 col1.subheader('`{}`'.format(wav_filename))
@@ -377,11 +377,11 @@ title_container.write('')
 # data transformation
 st.header('Data Transformation')
 plot_title_graphs(plot_data_dict)
-with st.beta_expander('Data Transformation: Overview'):
+with st.expander('Data Transformation: Overview'):
 	st.write(high_level_data_transformation_explanation)
-with st.beta_expander('Data Transformation: Step-By-Step'):
+with st.expander('Data Transformation: Step-By-Step'):
 	st.write(step_by_step_data_transformation_explanation)
-expander = st.beta_expander('Data Transformation: Graphs')
+expander = st.expander('Data Transformation: Graphs')
 plot_meta_data_graphs(plot_data_dict, expander)
 plot_single_note_graphs(plot_data_dict, expander)
 st.write('')
@@ -429,7 +429,7 @@ bargraph_values = {
 	'Space Between Notes Ratios': {'med_low_space_ratio':'Med Vol Space / Low Vol Space','high_low_space_ratio':'High Vol Space / Low Vol Space', 'high_med_space_ratio':'High Vol Space / Med Vol Space'}
 }
 x=bar_mdata['genre']
-with st.beta_expander('Graphs'):
+with st.expander('Graphs'):
 	for graph_title, graph_columns in bargraph_values.items():
 		fig = go.Figure()
 		for y_col, y_name in graph_columns.items():
